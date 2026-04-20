@@ -1,0 +1,151 @@
+/* POS System Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Navbar */
+.navbar {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+.navbar-brand {
+  padding: 15px 20px;
+  color: white;
+}
+
+.navbar-brand h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+  border-top: 1px solid #eee;
+  gap: 0;
+}
+
+.navbar-menu li {
+  flex: 1;
+}
+
+.nav-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.nav-btn:hover {
+  background: #efefef;
+  color: #7C3AED;
+}
+
+.nav-btn.active {
+  background: white;
+  color: #7C3AED;
+  border-bottom-color: #7C3AED;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f0f2f5;
+}
+
+.two-column-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  height: 100%;
+}
+
+.two-column-layout > div:first-child {
+  overflow-y: auto;
+}
+
+.two-column-layout > div:last-child {
+  overflow-y: auto;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .two-column-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-menu {
+    flex-direction: column;
+  }
+
+  .navbar-menu li {
+    flex: none;
+  }
+
+  .nav-btn {
+    border-bottom: none;
+    border-left: 3px solid transparent;
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+
+  .nav-btn.active {
+    border-left-color: #FF6B00;
+    border-bottom: none;
+  }
+
+  .navbar-brand h1 {
+    font-size: 18px;
+  }
+}

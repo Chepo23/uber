@@ -1,0 +1,203 @@
+.uber-panel-container {
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  min-height: 100vh;
+}
+
+.uber-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.uber-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.refresh-btn {
+  padding: 8px 16px;
+  background: #7C3AED;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.refresh-btn:hover {
+  background: #6D28D9;
+}
+
+.empty-uber-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 18px;
+}
+
+.uber-orders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.uber-order-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.uber-order-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.uber-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #7C3AED;
+  color: white;
+  padding: 15px;
+}
+
+.uber-order-id {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.uber-order-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.uber-order-content {
+  padding: 15px;
+}
+
+.customer-section h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.customer-section p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 13px;
+}
+
+.items-section {
+  margin: 15px 0;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.items-section h4 {
+  margin: 0 0 8px 0;
+  color: #333;
+  font-size: 14px;
+}
+
+.items-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.items-section li {
+  margin: 6px 0;
+  color: #555;
+  font-size: 13px;
+}
+
+.order-meta {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.order-meta p {
+  margin: 6px 0;
+  color: #555;
+  font-size: 13px;
+}
+
+.order-meta strong {
+  color: #333;
+}
+
+.uber-order-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 15px;
+  background: #f9f9f9;
+  border-top: 1px solid #eee;
+}
+
+.confirm-btn,
+.reject-btn,
+.status-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.confirm-btn {
+  background: #8B5CF6;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #7C3AED;
+}
+
+.reject-btn {
+  background: #f44336;
+  color: white;
+}
+
+.reject-btn:hover {
+  background: #d32f2f;
+}
+
+.status-btn {
+  background: #7C3AED;
+  color: white;
+}
+
+.status-btn:hover {
+  background: #6D28D9;
+}
+
+@media (max-width: 900px) {
+  .uber-orders-list {
+    grid-template-columns: 1fr;
+  }
+
+  .uber-order-actions {
+    flex-direction: column;
+  }
+
+  .confirm-btn,
+  .reject-btn,
+  .status-btn {
+    width: 100%;
+  }
+}
