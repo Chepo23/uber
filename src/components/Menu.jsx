@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { OrderContext } from '../context/OrderContext';
 import restaurantApi from '../services/restaurantApi';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import './Menu.css';
 import { formatPrice } from '../utils/helpers';
 
@@ -9,18 +9,39 @@ export default function Menu() {
   const { addOrder, products } = useContext(OrderContext);
   const [menu, setMenu] = useState([]);
   const [cart, setCart] = useState([]);
-  const [customerName, setCustomerName] = useState('');
+  
+  // ✅ Datos del cliente (completo según Sierra)
+  const [customerData, setCustomerData] = useState({
+    customerName: '',
+    phone: '',
+    email: '',
+    address: '',
+    address2: '',
+    city: '',
+    zipCode: '',
+    orderComments: ''
+  });
+  
   const [loadingMenu, setLoadingMenu] = useState(true);
+  const [expandedCategory, setExpandedCategory] = useState(null);
 
   // ✅ Sincronizar menú desde el contexto
   useEffect(() => {
     if (products && products.length > 0) {
       setMenu(products);
       setLoadingMenu(false);
+      // Expandir primera categoría por defecto
+      if (products.length > 0) {
+        setExpandedCategory(products[0].id);
+      }
     } else {
       // Fallback al menú local si no hay datos de Sierra
-      setMenu(restaurantApi.getDemoMenu().categories);
+      const demoMenu = restaurantApi.getDemoMenu().categories;
+      setMenu(demoMenu);
       setLoadingMenu(false);
+      if (demoMenu.length > 0) {
+        setExpandedCategory(demoMenu[0].id);
+      }
     }
   }, [products]);
 
@@ -65,9 +86,14 @@ export default function Menu() {
     return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
-  const handleCreateOrder = () => {
-    if (!customerName.trim()) {
+  const handleCreateOrder = async () => {
+    // ✅ Validar datos obligatorios
+    if (!customerData.customerName.trim()) {
       alert('Por favor ingresa el nombre del cliente');
+      return;
+    }
+    if (!customerData.phone.trim()) {
+      alert('Por favor ingresa el teléfono');
       return;
     }
     if (cart.length === 0) {
@@ -75,18 +101,73 @@ export default function Menu() {
       return;
     }
 
+    // ✅ Crear orden completa según esquema Sierra
     const order = {
-      customer: customerName,
-      items: cart,
+      // IDs
+      id: 'ORD' + Date.now().toString().slice(-8),
+      orderNumber: 'ORD' + Date.now().toString().slice(-8),
+      
+      // Datos del cliente
+      customerName: customerData.customerName,
+      phone: customerData.phone,
+      email: customerData.email,
+      address: customerData.address,
+      address2: customerData.address2,
+      city: customerData.city,
+      zipCode: customerData.zipCode,
+      
+      // Información operacional
+      terminal: "POS_WEB",
+      cashier: "WEB_CASHIER",
+      salesType: "7",
+      orderType: "ORDEN WEB ONLINE",
+      
+      // Totales
       total: calculateTotal(),
-      platform: 'local',
-      notes: ''
+      
+      // Items del carrito
+      items: cart.map(item => ({
+        id: item.id || item.plu,
+        plu: item.id || item.plu,
+        name: item.name,
+        description: item.description || '',
+        price: item.price,
+        quantity: item.quantity,
+        category: item.category,
+        tax: 0, // Calculateado por Sierra
+        taxTable: "0"
+      })),
+      
+      // Metadatos
+      products: cart,
+      platform: 'WEB_POS',
+      status: 'pending',
+      orderComments: customerData.orderComments,
+      timestamp: new Date().toISOString(),
+      paymentMethod: 'ONLINE_PAYMENT'
     };
 
-    addOrder(order);
-    setCustomerName('');
-    setCart([]);
-    alert('Orden creada exitosamente');
+    try {
+      console.log('📦 Enviando orden a Sierra:', order);
+      await addOrder(order);
+      
+      // ✅ Limpiar formulario
+      setCustomerData({
+        customerName: '',
+        phone: '',
+        email: '',
+        address: '',
+        address2: '',
+        city: '',
+        zipCode: '',
+        orderComments: ''
+      });
+      setCart([]);
+      alert('✅ Orden creada exitosamente en Sierra');
+    } catch (err) {
+      console.error('Error creating order:', err);
+      alert('❌ Error al crear la orden: ' + err.message);
+    }
   };
 
   return (
@@ -98,40 +179,63 @@ export default function Menu() {
             <p>Cargando menú...</p>
           </div>
         ) : (
-          <div className="categories">
-            {menu && menu.length > 0 ? (
-              menu.map(category => (
-                <div key={category.id} className="category">
-                  <h3>{category.name}</h3>
-                  <div className="products">
-                    {(category.products || []).length > 0 ? (
-                      category.products.map(product => (
-                        <div key={product.id} className="product-card">
-                          <div className="product-info">
-                            <h4>{product.name}</h4>
-                            <p>{product.description}</p>
-                            <div className="product-footer">
-                              <span className="price">{formatPrice(product.price)}</span>
-                              <button 
-                                className="add-btn"
-                                onClick={() => addToCart(product, category.name)}
-                              >
-                                + Agregar
-                              </button>
+          <>
+            {/* Botones de Categorías */}
+            <div className="category-buttons">
+              {menu && menu.length > 0 ? (
+                menu.map(category => (
+                  <button
+                    key={category.id}
+                    className={`category-btn ${expandedCategory === category.id ? 'active' : ''}`}
+                    onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
+                  >
+                    {category.name}
+                  </button>
+                ))
+              ) : (
+                <p className="no-menu">No hay categorías disponibles</p>
+              )}
+            </div>
+
+            {/* Productos de la categoría seleccionada - aparecen DEBAJO */}
+            {expandedCategory && menu.length > 0 && (
+              <div className="expanded-products">
+                {(() => {
+                  const category = menu.find(cat => cat.id === expandedCategory);
+                  if (!category) return null;
+                  
+                  return (
+                    <>
+                      <h3>{category.name}</h3>
+                      <div className="products">
+                        {(category.products || []).length > 0 ? (
+                          category.products.map(product => (
+                            <div key={product.id} className="product-card">
+                              <div className="product-info">
+                                <h4>{product.name}</h4>
+                                <p>{product.description}</p>
+                                <div className="product-footer">
+                                  <span className="price">{formatPrice(product.price)}</span>
+                                  <button 
+                                    className="add-btn"
+                                    onClick={() => addToCart(product, category.name)}
+                                  >
+                                    + Agregar
+                                  </button>
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="no-products">Sin productos en esta categoría</p>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="no-menu">No hay categorías disponibles</p>
+                          ))
+                        ) : (
+                          <p className="no-products">Sin productos en esta categoría</p>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
 
@@ -139,13 +243,87 @@ export default function Menu() {
         <div className="cart-container">
           <h2>Carrito de Compras</h2>
           
-          <div className="customer-input">
-            <input
-              type="text"
-              placeholder="Nombre del cliente"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-            />
+          <div className="customer-form">
+            <div className="form-group">
+              <label>Nombre *</label>
+              <input
+                type="text"
+                placeholder="Nombre del cliente"
+                value={customerData.customerName}
+                onChange={(e) => setCustomerData({...customerData, customerName: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Teléfono *</label>
+              <input
+                type="tel"
+                placeholder="+34 600 123 456"
+                value={customerData.phone}
+                onChange={(e) => setCustomerData({...customerData, phone: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="cliente@example.com"
+                value={customerData.email}
+                onChange={(e) => setCustomerData({...customerData, email: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Dirección</label>
+              <input
+                type="text"
+                placeholder="Calle y número"
+                value={customerData.address}
+                onChange={(e) => setCustomerData({...customerData, address: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Colonia</label>
+              <input
+                type="text"
+                placeholder="Colonia/Barrio"
+                value={customerData.address2}
+                onChange={(e) => setCustomerData({...customerData, address2: e.target.value})}
+              />
+            </div>
+            
+            <div className="form-row">
+              <div className="form-group">
+                <label>Ciudad</label>
+                <input
+                  type="text"
+                  placeholder="Ciudad"
+                  value={customerData.city}
+                  onChange={(e) => setCustomerData({...customerData, city: e.target.value})}
+                />
+              </div>
+              <div className="form-group">
+                <label>Código Postal</label>
+                <input
+                  type="text"
+                  placeholder="00000"
+                  value={customerData.zipCode}
+                  onChange={(e) => setCustomerData({...customerData, zipCode: e.target.value})}
+                />
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <label>Comentarios/Notas</label>
+              <textarea
+                placeholder="Ej: Sin cebolla, alergia a nueces..."
+                value={customerData.orderComments}
+                onChange={(e) => setCustomerData({...customerData, orderComments: e.target.value})}
+                rows="2"
+              />
+            </div>
           </div>
 
           {cart.length === 0 ? (

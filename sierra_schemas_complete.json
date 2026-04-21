@@ -1,0 +1,543 @@
+{
+  "esquemas_sierra": {
+    "descripcion": "Esquemas completos para pedidos Sierra - Extracción del archivo v1.json",
+    "fecha_extraccion": "2026-04-20",
+    "nota": "Todos los campos opcionales pueden ser null",
+    
+    "1_UploadDatav2": {
+      "nombre_esquema": "UploadDatav2",
+      "descripcion": "Wrapper principal - Información enviada para cargar ventas al servicio Sierra. Este es el esquema raíz que encapsula los datos de una venta completa.",
+      "tipo": "object",
+      "requeridos": ["salesDate"],
+      "campos": {
+        "status": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Estado de la carga."
+        },
+        "client": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Identificador del cliente."
+        },
+        "site": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Identificador del sitio."
+        },
+        "siteName": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Nombre del sitio."
+        },
+        "salesDate": {
+          "tipo": "date-time",
+          "requerido": true,
+          "descripcion": "Fecha de las ventas (obligatorio)."
+        },
+        "data": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Datos de ventas serializados (generalmente contiene órdenes en formato JSON serializado)."
+        },
+        "ip": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Dirección IP del origen."
+        },
+        "guid": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Identificador único de la sesión."
+        },
+        "system": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Sistema de origen."
+        },
+        "clientData": {
+          "tipo": "array[Client] | null",
+          "requerido": false,
+          "descripcion": "Datos adicionales del cliente (array de objetos Client)."
+        }
+      }
+    },
+
+    "2_Client": {
+      "nombre_esquema": "Client",
+      "descripcion": "Información básica del cliente/ubicación.",
+      "tipo": "object",
+      "requeridos": [],
+      "campos": {
+        "clientId": {
+          "tipo": "integer",
+          "requerido": false,
+          "descripcion": "Identificador interno del cliente."
+        },
+        "fiscalName": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Razón social registrada."
+        },
+        "name": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Nombre comercial del cliente."
+        },
+        "rfc": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "RFC del cliente."
+        },
+        "enabled": {
+          "tipo": "integer (0 o 1)",
+          "requerido": false,
+          "descripcion": "Indica si el cliente está habilitado (0=no, 1=sí)."
+        },
+        "zone": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Zona geográfica asignada."
+        },
+        "office": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Oficina relacionada."
+        },
+        "debugMode": {
+          "tipo": "integer (0 o 1)",
+          "requerido": false,
+          "descripcion": "Nivel de depuración para el sitio (0=desactivado, 1=activado)."
+        },
+        "enableStats": {
+          "tipo": "integer (0 o 1)",
+          "requerido": false,
+          "descripcion": "Indica si se habilitan estadísticas (0=no, 1=sí)."
+        },
+        "enableDashboard": {
+          "tipo": "integer (0 o 1)",
+          "requerido": false,
+          "descripcion": "Indica si se muestra el dashboard (0=no, 1=sí)."
+        }
+      }
+    },
+
+    "3_OrderTicket": {
+      "nombre_esquema": "OrderTicket",
+      "descripcion": "Datos completos de una orden/ticket. Este es el esquema que se envía dentro del campo 'data' de UploadDatav2 (usualmente serializado como JSON string).",
+      "tipo": "object",
+      "requeridos": ["order"],
+      "campos": {
+        "order": {
+          "tipo": "string",
+          "requerido": true,
+          "descripcion": "Número de orden original (identificador único de la orden)."
+        },
+        "terminal": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Número de terminal/caja."
+        },
+        "server": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Mesero/vendedor asignado."
+        },
+        "cashier": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Cajero que registra la orden."
+        },
+        "subTotal": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Subtotal de la orden (sin impuestos)."
+        },
+        "tax": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "IVA/Impuestos aplicados."
+        },
+        "credits": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Pagos/créditos aplicados."
+        },
+        "change": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Cambio entregado."
+        },
+        "salesType": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Tipo de venta según catálogo (ej: 'DINE_IN', 'TAKEOUT', 'DELIVERY')."
+        },
+        "orderType": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Tipo de orden según origen (ej: 'ORDEN WEB ONLINE', 'ORDEN WEB LOCAL')."
+        },
+        "openStatus": {
+          "tipo": "string (0 o 1)",
+          "requerido": false,
+          "descripcion": "0 = Cuenta se cierra automáticamente, 1 = Cliente debe cerrar cuenta."
+        },
+        "production": {
+          "tipo": "boolean",
+          "requerido": false,
+          "descripcion": "Indica si es ambiente de producción (true) o demo/pruebas (false)."
+        },
+        "routeProducts": {
+          "tipo": "boolean",
+          "requerido": false,
+          "descripcion": "Enviar productos a cocina(s)/barra(s) para preparación."
+        },
+        "paymentTransactionId": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Folio de transacción de pago (Stripe u otro gateway)."
+        },
+        "orderComments": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Comentarios generales de la orden (se replica en todos los productos)."
+        },
+        "tableNumber": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Número de mesa (para órdenes locales/QR)."
+        },
+        "orderName": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Nombre identificador de la orden en el PDV (opcional)."
+        },
+        "client": {
+          "tipo": "array[ClientOrder] | null",
+          "requerido": false,
+          "descripcion": "Datos del cliente (array con información de contacto y entrega)."
+        },
+        "plus": {
+          "tipo": "array[PluOrder]",
+          "requerido": false,
+          "descripcion": "Lista de productos (items) en la orden."
+        },
+        "payments": {
+          "tipo": "array[PaymentOrder] | null",
+          "requerido": false,
+          "descripcion": "Lista de pagos aplicados (opcional, detalle de métodos de pago)."
+        },
+        "paymentIdentifierString": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Nombre del método de pago para mostrar en PDV (opcional)."
+        }
+      }
+    },
+
+    "4_PluOrder": {
+      "nombre_esquema": "PluOrder",
+      "descripcion": "Detalle de cada producto en una orden. PLU = Price Look Up (código de artículo).",
+      "tipo": "object",
+      "requeridos": ["plu"],
+      "campos": {
+        "plu": {
+          "tipo": "string",
+          "requerido": true,
+          "descripcion": "Número de PLU (código único del producto)."
+        },
+        "description": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Descripción del producto."
+        },
+        "quantity": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Cantidad del producto ordenado."
+        },
+        "unitPrice": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Precio unitario del producto."
+        },
+        "subTotal": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Subtotal (cantidad × precio unitario), sin impuestos."
+        },
+        "tax": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Impuesto total (IVA) sobre este producto."
+        },
+        "taxTable": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Identificador de tabla de impuestos aplicada (ej: 'IVA16', 'IVA0')."
+        },
+        "comments": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Comentarios/notas específicas para este producto (instrucciones de preparación)."
+        },
+        "subPlus": {
+          "tipo": "array[SubPlus] | null",
+          "requerido": false,
+          "descripcion": "Modificadores/complementos del producto (extras, cambios, opciones)."
+        }
+      }
+    },
+
+    "5_SubPlus": {
+      "nombre_esquema": "SubPlus",
+      "descripcion": "Modificadores o complementos de un producto. Ej: extras, cambios de tamaño, ingredientes adicionales.",
+      "tipo": "object",
+      "requeridos": [],
+      "campos": {
+        "plu": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Número de PLU del modificador (opcional)."
+        },
+        "description": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Descripción del modificador (ej: 'Extra queso', 'Salsa picante')."
+        },
+        "quantity": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Cantidad del modificador."
+        },
+        "unitPrice": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Precio unitario del modificador (cargo adicional si aplica)."
+        },
+        "subTotal": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Subtotal del modificador (cantidad × precio)."
+        },
+        "tax": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Impuesto sobre el modificador."
+        },
+        "taxTable": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Identificador de tabla de impuestos para el modificador."
+        },
+        "comments": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Comentarios adicionales del modificador."
+        }
+      }
+    },
+
+    "6_PaymentOrder": {
+      "nombre_esquema": "PaymentOrder",
+      "descripcion": "Detalle de cada método de pago usado en la orden.",
+      "tipo": "object",
+      "requeridos": [],
+      "campos": {
+        "plu": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Número de PLU del método de pago (identificador del tipo de pago)."
+        },
+        "description": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Descripción del método de pago (ej: 'Tarjeta Crédito', 'Efectivo', 'Transferencia')."
+        },
+        "unitPrice": {
+          "tipo": "decimal",
+          "requerido": false,
+          "descripcion": "Monto pagado con este método."
+        }
+      }
+    },
+
+    "7_ClientOrder": {
+      "nombre_esquema": "ClientOrder",
+      "descripcion": "Información del cliente para entrega o referencia en la orden.",
+      "tipo": "object",
+      "requeridos": [],
+      "campos": {
+        "clientId": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Número de cliente."
+        },
+        "name": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Nombre del cliente."
+        },
+        "address": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Calle y número de dirección."
+        },
+        "address2": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Colonia/localidad."
+        },
+        "city": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Ciudad."
+        },
+        "zipCode": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Código postal."
+        },
+        "email": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Correo electrónico."
+        },
+        "telephone": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Teléfono fijo."
+        },
+        "mobilPhone": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Teléfono celular/móvil."
+        },
+        "memo1": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Línea de memo 1."
+        },
+        "memo2": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Línea de memo 2."
+        },
+        "memo3": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Línea de memo 3."
+        },
+        "memo4": {
+          "tipo": "string | null",
+          "requerido": false,
+          "descripcion": "Línea de memo 4."
+        }
+      }
+    },
+
+    "ejemplo_pedido_completo": {
+      "descripcion": "Estructura ejemplo de un pedido completo que se enviaría a Sierra",
+      "estructura": {
+        "UploadDatav2": {
+          "status": "PENDING",
+          "client": "CLIENT_001",
+          "site": "SITE_001",
+          "siteName": "Sucursal Centro",
+          "salesDate": "2026-04-20T19:30:00Z",
+          "data": "{serialized OrderTicket JSON}",
+          "ip": "192.168.1.100",
+          "guid": "550e8400-e29b-41d4-a716-446655440000",
+          "system": "POS_SYSTEM",
+          "clientData": [
+            {
+              "clientId": 1,
+              "fiscalName": "EMPRESA EJEMPLO SA",
+              "name": "Ejemplo S.A.",
+              "rfc": "EXA000000XYZ",
+              "enabled": 1,
+              "zone": "ZONE_NORTE",
+              "office": "OFICINA_CENTRAL"
+            }
+          ]
+        },
+        "OrderTicket": {
+          "order": "ORD20260420001",
+          "terminal": "POS_01",
+          "server": "JUAN",
+          "cashier": "MARIA",
+          "subTotal": 500.00,
+          "tax": 80.00,
+          "credits": 0.00,
+          "change": 0.00,
+          "salesType": "DINE_IN",
+          "orderType": "ONLINE_ORDER",
+          "openStatus": "0",
+          "production": true,
+          "routeProducts": true,
+          "tableNumber": "15",
+          "orderName": "Mesa 15 - 4 personas",
+          "client": [
+            {
+              "clientId": "CLIENT_123",
+              "name": "Juan Pérez",
+              "email": "juan@example.com",
+              "telephone": "5551234567"
+            }
+          ],
+          "plus": [
+            {
+              "plu": "HAMBURGESA_001",
+              "description": "Hamburguesa Premium",
+              "quantity": 2,
+              "unitPrice": 150.00,
+              "subTotal": 300.00,
+              "tax": 48.00,
+              "taxTable": "IVA16",
+              "comments": "Sin cebolla",
+              "subPlus": [
+                {
+                  "plu": "EXTRA_QUESO",
+                  "description": "Extra Queso",
+                  "quantity": 2,
+                  "unitPrice": 20.00,
+                  "subTotal": 40.00,
+                  "tax": 6.40,
+                  "taxTable": "IVA16"
+                }
+              ]
+            },
+            {
+              "plu": "BEBIDA_001",
+              "description": "Refresco Grande",
+              "quantity": 2,
+              "unitPrice": 50.00,
+              "subTotal": 100.00,
+              "tax": 16.00,
+              "taxTable": "IVA16"
+            }
+          ],
+          "payments": [
+            {
+              "plu": "PAGO_TARJETA",
+              "description": "Tarjeta de Crédito",
+              "unitPrice": 580.00
+            }
+          ]
+        }
+      }
+    },
+
+    "notas_importantes": {
+      "1_campo_data": "El campo 'data' en UploadDatav2 contiene el OrderTicket serializado como JSON string",
+      "2_requeridos": "Solo 'order' (en OrderTicket) y 'salesDate' (en UploadDatav2) son requeridos",
+      "3_tipos_decimales": "Los montos usan formato decimal (numbers con 2 decimales)",
+      "4_fechas": "Las fechas usan formato ISO 8601 (date-time)",
+      "5_null_fields": "Todos los campos pueden ser null/omitidos excepto los requeridos",
+      "6_subplus_opcional": "SubPlus es opcional pero muy común en órdenes de restaurantes",
+      "7_payments_opcional": "Payments es opcional y de uso específico",
+      "8_client_data": "Client en UploadDatav2 es un array pero usualmente contiene un único elemento"
+    }
+  }
+}

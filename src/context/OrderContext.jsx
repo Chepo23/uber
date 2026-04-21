@@ -48,34 +48,41 @@ export const OrderProvider = ({ children }) => {
     }
   }, []);
 
-  // ✅ Crear orden y subir a Sierra
-  const addOrder = useCallback((order) => {
-    const newOrder = {
-      id: Date.now().toString(),
-      timestamp: new Date(),
-      status: 'pending',
-      items: [],
-      total: 0,
-      platform: 'local', // 'local' o 'ubereats'
-      ...order
-    };
+  // ✅ Crear orden Y subirla a Sierra
+  const addOrder = useCallback(async (order) => {
+    setLoading(true);
+    setError(null);
     
-    setOrders(prev => [newOrder, ...prev]);
-    
-    // Intentar subir a Sierra API
-    uploadOrderToSierra(newOrder);
-    
-    return newOrder;
+    try {
+      console.log('📤 Creando orden en Sierra:', order);
+      
+      // Subir a Sierra
+      const response = await sierraApi.uploadSalesData(order);
+      console.log('✅ Orden creada en Sierra:', response);
+      
+      // Si funciona, guardar también localmente para sincronización
+      setOrders(prev => [order, ...prev]);
+      
+      return { order, sierra: response };
+    } catch (err) {
+      console.error('❌ Error al crear orden en Sierra:', err);
+      setError(`Error: ${err.message}`);
+      throw err; // Re-lanzar el error para que el componente lo maneje
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // ✅ Subir orden a la API de Sierra
+  // ✅ Subir orden a la API de Sierra (directamente, sin formateo extra)
   const uploadOrderToSierra = useCallback(async (order) => {
     try {
-      const formattedOrder = sierraApi.formatOrderForUpload(order);
-      await sierraApi.uploadSalesData(formattedOrder);
-      console.log('✅ Orden subida a Sierra:', order.id);
+      console.log('📤 Enviando orden a Sierra:', order);
+      const response = await sierraApi.uploadSalesData(order);
+      console.log('✅ Orden subida a Sierra exitosamente:', response);
+      return response;
     } catch (err) {
-      console.warn('No se pudo subir a Sierra, guardado localmente:', err);
+      console.error('❌ Error al subir a Sierra:', err);
+      throw err;
     }
   }, []);
 
