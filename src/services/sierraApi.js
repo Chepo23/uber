@@ -1,17 +1,24 @@
 // Servicio para la API Real de Sistemas Sierra
+import { authenticatedFetch } from './apiClient';
+
 const API_BASE_URL = import.meta.env.VITE_SIERRA_API_URL || 'https://demo-services-alternative.sierraerp.com';
-const API_KEY = 'CxzKRteOXeAr5fpa1D2wOm4tlMs64Jsz6wPoYQye8Kdz6sgZ9r0w9JOh3JbJZmlV'; // API Key válida
+const API_KEY =
+  (import.meta.env.VITE_SIERRA_API_KEY ||
+    'CxzKRteOXeAr5fpa1D2wOm4tlMs64Jsz6wPoYQye8Kdz6sgZ9r0w9JOh3JbJZmlV').trim();
 const PREFERRED_EMPLOYEE_SHORT = (import.meta.env.VITE_SIERRA_EMPLOYEE_SHORT || 'BRANDON').toString();
 const PREFERRED_EMPLOYEE_ID = (import.meta.env.VITE_SIERRA_EMPLOYEE_ID || '1002').toString();
-
-console.log('🔑 Sierra API Key:', API_KEY.substring(0, 10) + '...');
-console.log('🌐 Sierra API URL:', API_BASE_URL);
 
 // Headers con autenticación
 const getHeaders = () => ({
   'Content-Type': 'application/json',
-  'X-Api-Key': API_KEY,
 });
+
+const sierraFetch = (path, options = {}) => {
+  return authenticatedFetch(`${API_BASE_URL}${path}`, options, {
+    apiKey: API_KEY,
+    retryOnAuthFail: true,
+  });
+};
 
 const normalizeEmployeeCode = (employee) => {
   if (!employee || typeof employee !== 'object') return null;
@@ -33,7 +40,7 @@ const isPlaceholderEmployee = (value) => {
 };
 
 const getEmployees = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/v1/employees`, {
+  const response = await sierraFetch('/api/v1/employees', {
     method: 'GET',
     headers: getHeaders(),
   });
@@ -63,7 +70,7 @@ const verifyOrderPersistence = async (orderNumber) => {
       Order: String(orderNumber),
     });
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/orders?${query.toString()}`, {
+    const response = await sierraFetch(`/api/v1/orders?${query.toString()}`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -104,24 +111,24 @@ const verifyOrderPersistence = async (orderNumber) => {
   }
 };
 
-// Generar GUID
-const generateGuid = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0,
-      v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-};
-
 // ✅ Crear OrderTicket (esquema Sierra completo)
 const createOrderTicket = (order) => {
-  const total = parseFloat(order.total) || 0;
+  const total = Number.parseFloat(order.total) || 0;
   const items = order.items || order.products || [];
+  const accountId = order.createdByUserId ? String(order.createdByUserId) : null;
+  const accountName = order.createdByUserName ? String(order.createdByUserName) : null;
+  let accountComment = '';
+  if (accountId) {
+    accountComment = `Cuenta:${accountId}`;
+    if (accountName) {
+      accountComment += ` (${accountName})`;
+    }
+  }
   
   // Crear el array de productos (plus) - REQUERIDO
   const plusArray = items.map(item => {
-    const itemPrice = parseFloat(item.price) || 0;
-    const itemQty = parseFloat(item.quantity) || 1;
+    const itemPrice = Number.parseFloat(item.price) || 0;
+    const itemQty = Number.parseFloat(item.quantity) || 1;
     
     return {
       plu: (item.id || item.plu || Date.now().toString()).toString(),
@@ -129,7 +136,7 @@ const createOrderTicket = (order) => {
       quantity: itemQty,
       unitPrice: itemPrice,
       subTotal: itemQty * itemPrice,
-      tax: 0.0,
+      tax: 0,
       taxTable: "0",
       comments: item.comments ? item.comments.substring(0, 200) : null,
       subPlus: []
@@ -148,9 +155,9 @@ const createOrderTicket = (order) => {
     
     // Totales - como números o strings válidos
     subTotal: total,
-    tax: 0.0,
+    tax: 0,
     credits: total,
-    change: 0.0,
+    change: 0,
     
     // Tipo - strings
     salesType: "7",
@@ -163,7 +170,7 @@ const createOrderTicket = (order) => {
     paymentTransactionId: ('TX' + Date.now().toString().slice(-10)).toString(),
     
     // Comentarios
-    orderComments: order.orderComments ? order.orderComments.substring(0, 500) : "",
+    orderComments: [order.orderComments || '', accountComment].filter(Boolean).join(' | ').substring(0, 500),
     
     // Datos del cliente (array)
     client: [
@@ -177,8 +184,8 @@ const createOrderTicket = (order) => {
         email: (order.email || "").substring(0, 100),
         telephone: (order.telephone || "").substring(0, 20),
         mobilPhone: (order.phone || "").substring(0, 20),
-        memo1: null,
-        memo2: null,
+        memo1: accountId,
+        memo2: accountName,
         memo3: null,
         memo4: null
       }
@@ -191,7 +198,7 @@ const createOrderTicket = (order) => {
       quantity: 1,
       unitPrice: total,
       subTotal: total,
-      tax: 0.0,
+      tax: 0,
       taxTable: "0",
       comments: null,
       subPlus: []
@@ -213,7 +220,7 @@ export const uploadSalesData = async (order) => {
     console.log('🎫 OrderTicket FINAL creado:', JSON.stringify(orderTicket, null, 2));
 
     const sendOrder = async (ticket) => {
-      const response = await fetch(`${API_BASE_URL}/api/v1/orders`, {
+      const response = await sierraFetch('/api/v1/orders', {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(ticket),
@@ -377,13 +384,10 @@ export const getSalesData = async (params = {}) => {
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.desc) queryParams.append('desc', params.desc);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/v2/data?${queryParams}`,
-      {
-        method: 'GET',
-        headers: getHeaders(),
-      }
-    );
+    const response = await sierraFetch(`/api/v2/data?${queryParams}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -409,13 +413,10 @@ export const getOrders = async (params = {}) => {
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.desc) queryParams.append('desc', params.desc);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/v2/data/orders?${queryParams}`,
-      {
-        method: 'GET',
-        headers: getHeaders(),
-      }
-    );
+    const response = await sierraFetch(`/api/v2/data/orders?${queryParams}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -440,13 +441,10 @@ export const getDuplicateOrders = async (params = {}) => {
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.desc) queryParams.append('desc', params.desc);
 
-    const response = await fetch(
-      `${API_BASE_URL}/api/v2/data/orders/duplicates?${queryParams}`,
-      {
-        method: 'GET',
-        headers: getHeaders(),
-      }
-    );
+    const response = await sierraFetch(`/api/v2/data/orders/duplicates?${queryParams}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -462,13 +460,10 @@ export const getDuplicateOrders = async (params = {}) => {
 // ✅ Obtener categorías del menú
 export const getCategories = async () => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/plus/categories`,
-      {
-        method: 'GET',
-        headers: getHeaders(),
-      }
-    );
+    const response = await sierraFetch('/api/v1/plus/categories', {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -484,13 +479,10 @@ export const getCategories = async () => {
 // ✅ Obtener subcategorías
 export const getSubCategories = async () => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/plus/sub-categories`,
-      {
-        method: 'GET',
-        headers: getHeaders(),
-      }
-    );
+    const response = await sierraFetch('/api/v1/plus/sub-categories', {
+      method: 'GET',
+      headers: getHeaders(),
+    });
 
     if (!response.ok) {
       throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -506,8 +498,8 @@ export const getSubCategories = async () => {
 // ✅ Obtener productos de una categoría
 export const getProductsByCategory = async (category, minAmount = 0) => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/api/v1/plus/categories/${encodeURIComponent(category)}/${minAmount}`,
+    const response = await sierraFetch(
+      `/api/v1/plus/categories/${encodeURIComponent(category)}/${minAmount}`,
       {
         method: 'GET',
         headers: getHeaders(),
@@ -563,7 +555,11 @@ export const getCompleteMenu = async () => {
                       id: p.id,
                       name: p.nombre_corto || p.nombre_largo || p.nombre || 'Producto',
                       description: p.nombre_largo || p.nombre_corto || p.descripcion || '',
-                      price: parseFloat(p.precio1) || parseFloat(p.precio2) || parseFloat(p.price) || 0
+                      price:
+                        Number.parseFloat(p.precio1) ||
+                        Number.parseFloat(p.precio2) ||
+                        Number.parseFloat(p.price) ||
+                        0
                     }))
                     .filter(p => p.price > 0) // ✅ Filtrar solo productos con precio > 0
                 : []

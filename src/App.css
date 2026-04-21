@@ -26,9 +26,70 @@ body {
   z-index: 100;
 }
 
+.navbar-top-row {
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
 .navbar-brand {
-  padding: 15px 20px;
+  padding: 0;
   color: white;
+}
+
+.session-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.session-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #f7f7fb;
+  font-size: 0.88rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.logout-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.23);
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.auth-loading-screen {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f2f5;
+}
+
+.auth-loading-card {
+  background: #ffffff;
+  border: 1px solid #e6e9f0;
+  border-radius: 14px;
+  padding: 20px 24px;
+  color: #3b4253;
+  font-weight: 600;
 }
 
 .navbar-brand h1 {
@@ -125,6 +186,16 @@ body {
 }
 
 @media (max-width: 768px) {
+  .navbar-top-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .session-box {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .navbar-menu {
     flex-direction: column;
   }

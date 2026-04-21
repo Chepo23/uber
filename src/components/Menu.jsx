@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { OrderContext } from '../context/OrderContext';
 import restaurantApi from '../services/restaurantApi';
-import { X, ChevronDown } from 'lucide-react';
+import { X } from 'lucide-react';
 import './Menu.css';
 import { formatPrice } from '../utils/helpers';
 
@@ -109,6 +109,7 @@ export default function Menu() {
       
       // Datos del cliente
       customerName: customerData.customerName,
+      customer: customerData.customerName,
       phone: customerData.phone,
       email: customerData.email,
       address: customerData.address,
@@ -149,7 +150,7 @@ export default function Menu() {
 
     try {
       console.log('📦 Enviando orden a Sierra:', order);
-      await addOrder(order);
+      const result = await addOrder(order);
       
       // ✅ Limpiar formulario
       setCustomerData({
@@ -163,7 +164,12 @@ export default function Menu() {
         orderComments: ''
       });
       setCart([]);
-      alert('✅ Orden creada exitosamente en Sierra');
+
+      if (result.uploaded) {
+        alert('✅ Orden creada y sincronizada con Sierra');
+      } else {
+        alert('⚠️ Orden guardada en tu cuenta, pero no se sincronizo con Sierra en este momento');
+      }
     } catch (err) {
       console.error('Error creating order:', err);
       alert('❌ Error al crear la orden: ' + err.message);
@@ -245,8 +251,9 @@ export default function Menu() {
           
           <div className="customer-form">
             <div className="form-group">
-              <label>Nombre *</label>
+              <label htmlFor="customerName">Nombre *</label>
               <input
+                id="customerName"
                 type="text"
                 placeholder="Nombre del cliente"
                 value={customerData.customerName}
@@ -255,8 +262,9 @@ export default function Menu() {
             </div>
             
             <div className="form-group">
-              <label>Teléfono *</label>
+              <label htmlFor="customerPhone">Telefono *</label>
               <input
+                id="customerPhone"
                 type="tel"
                 placeholder="+34 600 123 456"
                 value={customerData.phone}
@@ -265,8 +273,9 @@ export default function Menu() {
             </div>
             
             <div className="form-group">
-              <label>Email</label>
+              <label htmlFor="customerEmail">Email</label>
               <input
+                id="customerEmail"
                 type="email"
                 placeholder="cliente@example.com"
                 value={customerData.email}
@@ -275,8 +284,9 @@ export default function Menu() {
             </div>
             
             <div className="form-group">
-              <label>Dirección</label>
+              <label htmlFor="customerAddress">Direccion</label>
               <input
+                id="customerAddress"
                 type="text"
                 placeholder="Calle y número"
                 value={customerData.address}
@@ -285,8 +295,9 @@ export default function Menu() {
             </div>
             
             <div className="form-group">
-              <label>Colonia</label>
+              <label htmlFor="customerAddress2">Colonia</label>
               <input
+                id="customerAddress2"
                 type="text"
                 placeholder="Colonia/Barrio"
                 value={customerData.address2}
@@ -296,8 +307,9 @@ export default function Menu() {
             
             <div className="form-row">
               <div className="form-group">
-                <label>Ciudad</label>
+                <label htmlFor="customerCity">Ciudad</label>
                 <input
+                  id="customerCity"
                   type="text"
                   placeholder="Ciudad"
                   value={customerData.city}
@@ -305,8 +317,9 @@ export default function Menu() {
                 />
               </div>
               <div className="form-group">
-                <label>Código Postal</label>
+                <label htmlFor="customerZipCode">Codigo Postal</label>
                 <input
+                  id="customerZipCode"
                   type="text"
                   placeholder="00000"
                   value={customerData.zipCode}
@@ -316,8 +329,9 @@ export default function Menu() {
             </div>
             
             <div className="form-group">
-              <label>Comentarios/Notas</label>
+              <label htmlFor="customerNotes">Comentarios/Notas</label>
               <textarea
+                id="customerNotes"
                 placeholder="Ej: Sin cebolla, alergia a nueces..."
                 value={customerData.orderComments}
                 onChange={(e) => setCustomerData({...customerData, orderComments: e.target.value})}

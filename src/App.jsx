@@ -1,24 +1,53 @@
 import { useState } from 'react'
 import { OrderProvider } from './context/OrderContext'
-import { UtensilsCrossed, BarChart3, ClipboardList, Store, Car } from 'lucide-react'
+import { useAuth } from './context/AuthContext'
+import { UtensilsCrossed, BarChart3, ClipboardList, Store, Car, LogOut, UserRound } from 'lucide-react'
 import './App.css'
 import Dashboard from './components/Dashboard'
 import Menu from './components/Menu'
 import OrderList from './components/OrderList'
 import OrderDetail from './components/OrderDetail'
 import UberEatsPanel from './components/UberEatsPanel'
+import Login from './components/Login'
 
 function App() {
+  const { user, isAuthenticated, isLoadingAuth, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
+
+  if (isLoadingAuth) {
+    return (
+      <div className="auth-loading-screen">
+        <div className="auth-loading-card">Validando sesion...</div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <Login />
+  }
 
   return (
     <OrderProvider>
       <div className="app-container">
         <nav className="navbar">
-          <div className="navbar-brand">
-            <UtensilsCrossed size={28} style={{ display: 'inline-block', marginRight: '10px' }} />
-            <h1>POS System - Uber Eats Integration</h1>
+          <div className="navbar-top-row">
+            <div className="navbar-brand">
+              <UtensilsCrossed size={28} style={{ display: 'inline-block', marginRight: '10px' }} />
+              <h1>POS System - Uber Eats Integration</h1>
+            </div>
+
+            <div className="session-box">
+              <div className="session-user">
+                <UserRound size={16} />
+                <span>{user?.username || 'Usuario'}</span>
+              </div>
+              <button className="logout-btn" onClick={logout}>
+                <LogOut size={16} />
+                Salir
+              </button>
+            </div>
           </div>
+
           <ul className="navbar-menu">
             <li>
               <button 
