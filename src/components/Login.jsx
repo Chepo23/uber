@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { LockKeyhole, UserRound, LogIn } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { LockKeyhole, UserRound, LogIn, Car } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import uberOAuthService from '../services/uberOAuthService';
 import './Login.css';
 
 export default function Login() {
   const { login, register, authError } = useAuth();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('login');
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [registerData, setRegisterData] = useState({
@@ -36,6 +39,11 @@ export default function Login() {
   const switchMode = (mode) => {
     setViewMode(mode);
     clearAlerts();
+  };
+
+  const handleUberEatsLogin = () => {
+    const authUrl = uberOAuthService.getAuthorizationURL();
+    window.location.href = authUrl;
   };
 
   const handleSubmit = async (event) => {
@@ -170,6 +178,19 @@ export default function Login() {
                 {submitting ? 'Entrando...' : 'Iniciar sesion'}
               </button>
             </form>
+
+            <div className="login-divider">
+              <span>O conecta con Uber Eats</span>
+            </div>
+
+            <button 
+              type="button" 
+              className="uber-login-btn" 
+              onClick={handleUberEatsLogin}
+            >
+              <Car size={16} />
+              Conectar con Uber Eats (Sandbox)
+            </button>
           </>
         ) : (
           <>
@@ -253,6 +274,19 @@ export default function Login() {
                 {submitting ? 'Creando...' : 'Crear cuenta'}
               </button>
             </form>
+
+            <div className="login-divider">
+              <span>O conecta con Uber Eats</span>
+            </div>
+
+            <button 
+              type="button" 
+              className="uber-login-btn" 
+              onClick={handleUberEatsLogin}
+            >
+              <Car size={16} />
+              Conectar con Uber Eats (Sandbox)
+            </button>
           </>
         )}
       </div>

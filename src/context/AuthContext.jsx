@@ -62,6 +62,23 @@ export const AuthProvider = ({ children }) => {
 
   const validateStoredSession = useCallback(async () => {
     const stored = getSession();
+    const uberToken = localStorage.getItem('uber_eats_token');
+
+    // Si hay token Uber y no hay sesión, crear una sesión local
+    if (uberToken && !stored?.accessToken) {
+      const localSession = {
+        accessToken: uberToken,
+        user: {
+          id: 'uber-user',
+          username: 'Uber POS',
+          role: 'user',
+        },
+        provider: 'uber',
+      };
+      applySession(localSession);
+      setIsLoadingAuth(false);
+      return;
+    }
 
     if (!stored?.accessToken) {
       setIsLoadingAuth(false);
@@ -143,22 +160,31 @@ export const AuthProvider = ({ children }) => {
       // Si revoke falla igual se limpia sesion local.
     }
 
+    // Limpiar también el token Uber Eats
+    localStorage.removeItem('uber_eats_token');
+
     clearSession();
     setSessionState(null);
     setAuthError(null);
   }, []);
 
   const value = useMemo(
-    () => ({
-      user: sessionState?.user || null,
-      accessToken: sessionState?.accessToken || null,
-      isAuthenticated: Boolean(sessionState?.accessToken),
-      isLoadingAuth,
-      authError,
-      login,
-      register,
-      logout,
-    }),
+    () => {
+      // Verificar si hay token de Uber Eats en localStorage
+      const uberToken = localStorage.getItem('uber_eats_token');
+      const isAuthenticated = Boolean(sessionState?.accessToken) || Boolean(uberToken);
+
+      return {
+        user: sessionState?.user || null,
+        accessToken: sessionState?.accessToken || null,
+        isAuthenticated: isAuthenticated,
+        isLoadingAuth,
+        authError,
+        login,
+        register,
+        logout,
+      };
+    },
     [authError, isLoadingAuth, login, logout, register, sessionState]
   );
 

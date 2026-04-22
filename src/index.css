@@ -1,23 +1,44 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Paleta profesional corporativa */
+  --primary: #1e40af;           /* Azul marino profundo */
+  --primary-dark: #1e3a8a;      /* Azul más oscuro */
+  --primary-light: #3b82f6;     /* Azul claro */
+  --secondary: #0891b2;         /* Cyan profesional */
+  --accent: #06b6d4;            /* Accent cyan */
+  
+  /* Neutral palette */
+  --text: #1f2937;              /* Gris oscuro para texto */
+  --text-h: #111827;            /* Negro para headings */
+  --text-light: #6b7280;        /* Gris para texto secundario */
+  --bg: #ffffff;                /* Blanco puro */
+  --bg-secondary: #f9fafb;      /* Gris muy claro */
+  --bg-tertiary: #f3f4f6;       /* Gris claro */
+  --border: #e5e7eb;            /* Borde gris */
+  --border-light: #f3f4f6;      /* Borde muy claro */
+  
+  /* States */
+  --success: #10b981;           /* Verde éxito */
+  --warning: #f59e0b;           /* Naranja warning */
+  --danger: #ef4444;            /* Rojo error */
+  --info: #3b82f6;              /* Azul info */
+  
+  /* Backgrounds */
+  --primary-bg: rgba(30, 64, 175, 0.05);
+  --primary-border: rgba(30, 64, 175, 0.2);
+  --success-bg: rgba(16, 185, 129, 0.05);
+  --danger-bg: rgba(239, 68, 68, 0.05);
+  
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --heading: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  font: 16px/1.5 var(--sans);
+  letter-spacing: 0;
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -26,27 +47,35 @@
   -moz-osx-font-smoothing: grayscale;
 
   @media (max-width: 1024px) {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
+    --primary: #3b82f6;
+    --primary-dark: #1e40af;
+    --primary-light: #60a5fa;
+    --secondary: #06b6d4;
+    --accent: #22d3ee;
+    
+    --text: #e5e7eb;
+    --text-h: #f9fafb;
+    --text-light: #9ca3af;
+    --bg: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --border: #4b5563;
+    --border-light: #2d3748;
+    
+    --primary-bg: rgba(59, 130, 246, 0.1);
+    --primary-border: rgba(59, 130, 246, 0.3);
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -63,32 +92,42 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   font-family: var(--heading);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-h);
+  margin: 0;
 }
 
 h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
+  font-size: 32px;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
   @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
+    font-size: 28px;
   }
 }
+
 h2 {
   font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  margin-bottom: 12px;
   @media (max-width: 1024px) {
     font-size: 20px;
   }
 }
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
 p {
   margin: 0;
+  color: var(--text);
 }
 
 code,
@@ -104,4 +143,15 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+/* Texto seleccionado */
+::selection {
+  background: var(--primary);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: white;
 }

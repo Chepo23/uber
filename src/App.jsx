@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { OrderProvider } from './context/OrderContext'
 import { useAuth } from './context/AuthContext'
 import { UtensilsCrossed, BarChart3, ClipboardList, Store, Car, LogOut, UserRound } from 'lucide-react'
@@ -9,22 +10,14 @@ import OrderList from './components/OrderList'
 import OrderDetail from './components/OrderDetail'
 import UberEatsPanel from './components/UberEatsPanel'
 import Login from './components/Login'
+import OAuthCallback from './components/OAuthCallback'
+import OAuthDebug from './components/OAuthDebug'
+import UberEatsLogin from './components/UberEatsLogin'
 
-function App() {
-  const { user, isAuthenticated, isLoadingAuth, logout } = useAuth()
+// Componente wrapper para las rutas protegidas
+function ProtectedLayout({ children }) {
+  const { user, logout } = useAuth()
   const [activeTab, setActiveTab] = useState('dashboard')
-
-  if (isLoadingAuth) {
-    return (
-      <div className="auth-loading-screen">
-        <div className="auth-loading-card">Validando sesion...</div>
-      </div>
-    )
-  }
-
-  if (!isAuthenticated) {
-    return <Login />
-  }
 
   return (
     <OrderProvider>
@@ -90,20 +83,72 @@ function App() {
 
         <div className="main-content">
           {activeTab === 'dashboard' && <Dashboard />}
-          
           {activeTab === 'menu' && <Menu />}
-          
           {activeTab === 'orders' && (
             <div className="two-column-layout">
               <OrderList platform="local" />
               <OrderDetail />
             </div>
           )}
-          
           {activeTab === 'uber' && <UberEatsPanel />}
         </div>
       </div>
     </OrderProvider>
+  )
+}
+
+function AppContent() {
+  const { isAuthenticated, isLoadingAuth } = useAuth()
+
+  if (isLoadingAuth) {
+    return (
+      <div className="auth-loading-screen">
+        <div className="auth-loading-card">Validando sesion...</div>
+      </div>
+    )
+  }
+
+  return (
+    <Routes>
+      {/* Rutas públicas */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/uber-login" element={<UberEatsLogin />} />
+      <Route path="/auth/callback" element={<OAuthCallback />} />
+      <Route path="/oauth-debug" element={<OAuthDebug />} />
+      
+      {/* Rutas protegidas */}
+      <Route
+        path="/*"
+        element={
+          isAuthenticated ? (
+            <ProtectedLayout>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/orders" element={
+                  <div className="two-column-layout">
+                    <OrderList platform="local" />
+                    <OrderDetail />
+                  </div>
+                } />
+                <Route path="/uber" element={<UberEatsPanel />} />
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </ProtectedLayout>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
+    </Routes>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 
