@@ -1,0 +1,445 @@
+[
+  {
+    "id": "TEST-ORDER-1777952666688",
+    "orderId": "TEST-ORDER-1777952666688",
+    "status": "ready",
+    "customer": "Cliente Test 618",
+    "total": 35.87,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 2,
+        "price": 8.99,
+        "subtotal": 17.98
+      },
+      {
+        "name": "Quesadilla de Pollo",
+        "quantity": 1,
+        "price": 6.99,
+        "subtotal": 6.99
+      },
+      {
+        "name": "Refresco Grande",
+        "quantity": 2,
+        "price": 2.5,
+        "subtotal": 5
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T03:44:26.688Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777952666688",
+      "status": "pending",
+      "customer_name": "Cliente Test 618",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 2,
+          "price": 8.99,
+          "subtotal": 17.98
+        },
+        {
+          "name": "Quesadilla de Pollo",
+          "quantity": 1,
+          "price": 6.99,
+          "subtotal": 6.99
+        },
+        {
+          "name": "Refresco Grande",
+          "quantity": 2,
+          "price": 2.5,
+          "subtotal": 5
+        }
+      ],
+      "subtotal": 29.97,
+      "tax": 2.4,
+      "delivery_fee": 3.5,
+      "total": 35.87,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T03:44:26.688Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777952730831",
+    "orderId": "TEST-ORDER-1777952730831",
+    "status": "ready",
+    "customer": "Cliente Test 77",
+    "total": 35.87,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 2,
+        "price": 8.99,
+        "subtotal": 17.98
+      },
+      {
+        "name": "Quesadilla de Pollo",
+        "quantity": 1,
+        "price": 6.99,
+        "subtotal": 6.99
+      },
+      {
+        "name": "Refresco Grande",
+        "quantity": 2,
+        "price": 2.5,
+        "subtotal": 5
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T03:45:30.831Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777952730831",
+      "status": "pending",
+      "customer_name": "Cliente Test 77",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 2,
+          "price": 8.99,
+          "subtotal": 17.98
+        },
+        {
+          "name": "Quesadilla de Pollo",
+          "quantity": 1,
+          "price": 6.99,
+          "subtotal": 6.99
+        },
+        {
+          "name": "Refresco Grande",
+          "quantity": 2,
+          "price": 2.5,
+          "subtotal": 5
+        }
+      ],
+      "subtotal": 29.97,
+      "tax": 2.4,
+      "delivery_fee": 3.5,
+      "total": 35.87,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T03:45:30.831Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777954053660",
+    "orderId": "TEST-ORDER-1777954053660",
+    "status": "ready",
+    "customer": "Cliente Test 710",
+    "total": 35.87,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 2,
+        "price": 8.99,
+        "subtotal": 17.98
+      },
+      {
+        "name": "Quesadilla de Pollo",
+        "quantity": 1,
+        "price": 6.99,
+        "subtotal": 6.99
+      },
+      {
+        "name": "Refresco Grande",
+        "quantity": 2,
+        "price": 2.5,
+        "subtotal": 5
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T04:07:33.660Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777954053660",
+      "status": "pending",
+      "customer_name": "Cliente Test 710",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 2,
+          "price": 8.99,
+          "subtotal": 17.98
+        },
+        {
+          "name": "Quesadilla de Pollo",
+          "quantity": 1,
+          "price": 6.99,
+          "subtotal": 6.99
+        },
+        {
+          "name": "Refresco Grande",
+          "quantity": 2,
+          "price": 2.5,
+          "subtotal": 5
+        }
+      ],
+      "subtotal": 29.97,
+      "tax": 2.4,
+      "delivery_fee": 3.5,
+      "total": 35.87,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T04:07:33.660Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777954143663",
+    "orderId": "TEST-ORDER-1777954143663",
+    "status": "ready",
+    "customer": "Cliente Test 922",
+    "total": 35.87,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 2,
+        "price": 8.99,
+        "subtotal": 17.98
+      },
+      {
+        "name": "Quesadilla de Pollo",
+        "quantity": 1,
+        "price": 6.99,
+        "subtotal": 6.99
+      },
+      {
+        "name": "Refresco Grande",
+        "quantity": 2,
+        "price": 2.5,
+        "subtotal": 5
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T04:09:03.663Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777954143663",
+      "status": "pending",
+      "customer_name": "Cliente Test 922",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 2,
+          "price": 8.99,
+          "subtotal": 17.98
+        },
+        {
+          "name": "Quesadilla de Pollo",
+          "quantity": 1,
+          "price": 6.99,
+          "subtotal": 6.99
+        },
+        {
+          "name": "Refresco Grande",
+          "quantity": 2,
+          "price": 2.5,
+          "subtotal": 5
+        }
+      ],
+      "subtotal": 29.97,
+      "tax": 2.4,
+      "delivery_fee": 3.5,
+      "total": 35.87,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T04:09:03.663Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777954763509",
+    "orderId": "TEST-ORDER-1777954763509",
+    "status": "ready",
+    "customer": "Cliente Test 901",
+    "total": 35.87,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 2,
+        "price": 8.99,
+        "subtotal": 17.98
+      },
+      {
+        "name": "Quesadilla de Pollo",
+        "quantity": 1,
+        "price": 6.99,
+        "subtotal": 6.99
+      },
+      {
+        "name": "Refresco Grande",
+        "quantity": 2,
+        "price": 2.5,
+        "subtotal": 5
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T04:19:23.509Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777954763509",
+      "status": "pending",
+      "customer_name": "Cliente Test 901",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 2,
+          "price": 8.99,
+          "subtotal": 17.98
+        },
+        {
+          "name": "Quesadilla de Pollo",
+          "quantity": 1,
+          "price": 6.99,
+          "subtotal": 6.99
+        },
+        {
+          "name": "Refresco Grande",
+          "quantity": 2,
+          "price": 2.5,
+          "subtotal": 5
+        }
+      ],
+      "subtotal": 29.97,
+      "tax": 2.4,
+      "delivery_fee": 3.5,
+      "total": 35.87,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T04:19:23.509Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777954900968",
+    "orderId": "TEST-ORDER-1777954900968",
+    "status": "pending",
+    "customer": "Juan García",
+    "total": 56.37,
+    "items": [
+      {
+        "name": "Tacos al Pastor",
+        "quantity": 3,
+        "price": 8.99,
+        "subtotal": 26.97
+      },
+      {
+        "name": "Enchiladas Verdes",
+        "quantity": 2,
+        "price": 7.99,
+        "subtotal": 15.98
+      },
+      {
+        "name": "Agua de Jamaica",
+        "quantity": 4,
+        "price": 1.5,
+        "subtotal": 6
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T04:21:40.970Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777954900968",
+      "status": "pending",
+      "customer_name": "Juan García",
+      "customer_phone": "+56912345678",
+      "delivery_address": "Calle Principal 123, Santiago",
+      "items": [
+        {
+          "name": "Tacos al Pastor",
+          "quantity": 3,
+          "price": 8.99,
+          "subtotal": 26.97
+        },
+        {
+          "name": "Enchiladas Verdes",
+          "quantity": 2,
+          "price": 7.99,
+          "subtotal": 15.98
+        },
+        {
+          "name": "Agua de Jamaica",
+          "quantity": 4,
+          "price": 1.5,
+          "subtotal": 6
+        }
+      ],
+      "subtotal": 48.95,
+      "tax": 3.92,
+      "delivery_fee": 3.5,
+      "total": 56.37,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T04:21:40.968Z",
+      "estimated_pickup_time": 20
+    }
+  },
+  {
+    "id": "TEST-ORDER-1777954928373",
+    "orderId": "TEST-ORDER-1777954928373",
+    "status": "pending",
+    "customer": "María López",
+    "total": 23.99,
+    "items": [
+      {
+        "name": "Pizza Pepperoni",
+        "quantity": 1,
+        "price": 12.99,
+        "subtotal": 12.99
+      },
+      {
+        "name": "Coca Cola",
+        "quantity": 2,
+        "price": 2.99,
+        "subtotal": 5.98
+      }
+    ],
+    "platform": "ubereats",
+    "paymentStatus": "complete",
+    "timestamp": "2026-05-05T04:22:08.373Z",
+    "rawData": {
+      "id": "TEST-ORDER-1777954928373",
+      "status": "pending",
+      "customer_name": "María López",
+      "customer_phone": "+1234567890",
+      "delivery_address": "123 Main Street, Test City",
+      "items": [
+        {
+          "name": "Pizza Pepperoni",
+          "quantity": 1,
+          "price": 12.99,
+          "subtotal": 12.99
+        },
+        {
+          "name": "Coca Cola",
+          "quantity": 2,
+          "price": 2.99,
+          "subtotal": 5.98
+        }
+      ],
+      "subtotal": 18.97,
+      "tax": 1.52,
+      "delivery_fee": 3.5,
+      "total": 23.99,
+      "payment_method": "card",
+      "payment_status": "complete",
+      "created_at": "2026-05-05T04:22:08.373Z",
+      "estimated_pickup_time": 20
+    }
+  }
+]

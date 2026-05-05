@@ -21,6 +21,7 @@ export const formatDate = (date) => {
 export const getStatusColor = (status) => {
   const colors = {
     pending: '#FFA500',
+    accepted: '#2196F3',
     confirmed: '#4CAF50',
     preparing: '#2196F3',
     ready: '#00BCD4',
@@ -33,6 +34,7 @@ export const getStatusColor = (status) => {
 export const getStatusLabel = (status) => {
   const labels = {
     pending: 'Pendiente',
+    accepted: 'Aceptada',
     confirmed: 'Confirmado',
     preparing: 'Preparando',
     ready: 'Listo',

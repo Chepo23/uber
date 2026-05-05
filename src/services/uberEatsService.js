@@ -26,31 +26,35 @@ class UberEatsService {
 
   /**
    * Obtiene órdenes de Uber Eats
+   * Primero intenta obtener órdenes recibidas por webhook
+   * Si no hay, intenta obtener de la API de Uber
    */
   async getOrders() {
     try {
-      const token = this.getAccessToken();
-      if (!token) {
-        throw new Error('No access token found. Please authenticate first.');
-      }
-
       console.log('📨 Obteniendo órdenes de Uber Eats...');
 
-      const response = await fetch(`${this.apiBaseUrl}/uber/orders`, {
-        method: 'GET',
-        headers: this.getAuthHeaders()
-      });
+      // Obtener órdenes del webhook (órdenes locales)
+      try {
+        console.log('   📋 Obteniendo órdenes del webhook local...');
+        const webhookResponse = await fetch(`${this.apiBaseUrl}/webhooks/uber/orders`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error_description || 'Failed to fetch orders');
+        if (webhookResponse.ok) {
+          const webhookData = await webhookResponse.json();
+          console.log('✅ Órdenes obtenidas:', webhookData.total);
+          return webhookData.orders || [];
+        } else {
+          console.warn('⚠️  No se pudieron obtener órdenes del webhook');
+          return [];
+        }
+      } catch (webhookError) {
+        console.warn('⚠️  Error obteniendo órdenes:', webhookError.message);
+        return [];
       }
-
-      const data = await response.json();
-      console.log('✅ Órdenes obtenidas:', data.total);
-      return data.orders || [];
     } catch (error) {
-      console.error('❌ Error obteniendo órdenes:', error);
+      console.error('❌ Error en getOrders:', error);
       throw error;
     }
   }

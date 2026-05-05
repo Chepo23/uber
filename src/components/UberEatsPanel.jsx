@@ -18,18 +18,24 @@ export default function UberEatsPanel() {
       console.log('📨 Cargando órdenes de Uber Eats...');
       const orders = await uberEatsService.getOrders();
       
-      // Transformar datos de Uber al formato de la app
-      const transformedOrders = (orders || []).map(order => ({
-        id: order.id || order.order_id,
-        customer: order.consumer?.name || 'Cliente Desconocido',
-        phone: order.consumer?.phone || 'N/A',
-        address: order.delivery_address?.address || 'N/A',
-        items: order.items || [],
-        total: order.pricing?.total || 0,
-        status: order.status || 'pending',
-        timestamp: new Date(order.created_at || Date.now()),
-        deliveryTime: order.eta || 'Sin ETA'
-      }));
+      // Transformar datos de Uber (puede venir del webhook o de la API)
+      const transformedOrders = (orders || []).map(order => {
+        // Si viene del webhook, usar estructura diferente
+        const rawData = order.rawData || order;
+        
+        return {
+          id: order.id || order.orderId || order.order_id || 'unknown',
+          customer: order.customer || rawData.customer_name || order.consumer?.name || 'Cliente Desconocido',
+          phone: rawData.customer_phone || order.consumer?.phone || 'N/A',
+          address: rawData.delivery_address || order.delivery_address?.address || 'N/A',
+          items: order.items || rawData.items || [],
+          total: order.total || rawData.total || 0,
+          status: order.status || rawData.status || 'pending',
+          paymentStatus: order.paymentStatus || rawData.payment_status || 'complete',
+          timestamp: new Date(order.timestamp || rawData.created_at || Date.now()),
+          deliveryTime: rawData.estimated_pickup_time ? `${rawData.estimated_pickup_time} min` : 'Sin ETA'
+        };
+      });
 
       setUberOrders(transformedOrders);
       setError(null);
@@ -37,53 +43,45 @@ export default function UberEatsPanel() {
     } catch (err) {
       console.error('❌ Error cargando órdenes:', err);
       setError('Error al cargar órdenes de Uber Eats: ' + err.message);
-      // Cargar datos demo si falla la API
-      setUberOrders(getDemoOrders());
+      // Si no hay órdenes, mostrar vacío
+      setUberOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getDemoOrders = () => {
-    return [
-      {
-        id: 'UBER-001',
-        customer: 'Juan Pérez',
-        phone: '+1234567890',
-        address: 'Calle Principal 123',
-        items: [
-          { name: 'Hamburguesa Doble', quantity: 2, price: 8.99 },
-          { name: 'Refresco', quantity: 2, price: 2.99 }
-        ],
-        total: 23.96,
-        status: 'pending',
-        timestamp: new Date(Date.now() - 5 * 60000),
-        deliveryTime: '30-45 min'
-      },
-      {
-        id: 'UBER-002',
-        customer: 'María González',
-        phone: '+1234567891',
-        address: 'Av. Secundaria 456',
-        items: [
-          { name: 'Pizza Pepperoni', quantity: 1, price: 12.99 },
-          { name: 'Ensalada', quantity: 1, price: 6.99 }
-        ],
-        total: 19.98,
-        status: 'confirmed',
-        timestamp: new Date(Date.now() - 15 * 60000),
-        deliveryTime: '25-35 min'
-      }
-    ];
-  };
-
   const handleConfirmOrder = async (orderId) => {
     try {
+      // Aceptar la orden y cambiar estado a "preparing"
       await uberEatsService.acceptOrder(orderId);
+      await uberEatsService.updateOrderStatus(orderId, 'preparing');
       await loadUberOrders();
-      alert('Orden confirmada');
+      alert('✅ Orden aceptada - Preparando');
     } catch (err) {
-      alert('Error al confirmar la orden: ' + err.message);
+      alert('❌ Error al confirmar: ' + err.message);
+    }
+  };
+
+  const handleMarkReady = async (orderId) => {
+    try {
+      await uberEatsService.updateOrderStatus(orderId, 'ready');
+      await loadUberOrders();
+      alert('✅ Orden lista para entrega');
+    } catch (err) {
+      alert('❌ Error: ' + err.message);
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    const reason = prompt('¿Por qué cancelas esta orden?');
+    if (!reason) return;
+    
+    try {
+      await uberEatsService.updateOrderStatus(orderId, 'cancelled');
+      await loadUberOrders();
+      alert('❌ Orden cancelada');
+    } catch (err) {
+      alert('❌ Error al cancelar: ' + err.message);
     }
   };
 
@@ -184,40 +182,35 @@ export default function UberEatsPanel() {
                   </>
                 )}
                 
-                {order.status === 'confirmed' && (
+                {(order.status === 'preparing' || order.status === 'accepted') && (
                   <>
                     <button 
-                      className="status-btn"
-                      onClick={() => handleUpdateStatus(order.id, 'PREPARING')}
-                    >
-                      <Clock size={18} style={{ display: 'inline-block', marginRight: '6px' }} />
-                      Iniciando Preparación
-                    </button>
-                  </>
-                )}
-
-                {order.status === 'preparing' && (
-                  <>
-                    <button 
-                      className="status-btn"
-                      onClick={() => handleUpdateStatus(order.id, 'READY')}
+                      className="status-btn ready-btn"
+                      onClick={() => handleMarkReady(order.id)}
                     >
                       <Check size={18} style={{ display: 'inline-block', marginRight: '6px' }} />
-                      Marcar como Listo
+                      ✅ Listo para Entrega
+                    </button>
+                    <button 
+                      className="cancel-btn"
+                      onClick={() => handleCancelOrder(order.id)}
+                    >
+                      <X size={18} style={{ display: 'inline-block', marginRight: '6px' }} />
+                      Cancelar
                     </button>
                   </>
                 )}
 
                 {order.status === 'ready' && (
-                  <>
-                    <button 
-                      className="status-btn"
-                      onClick={() => handleUpdateStatus(order.id, 'DELIVERED')}
-                    >
-                      <Check size={18} style={{ display: 'inline-block', marginRight: '6px' }} />
-                      Entregado
-                    </button>
-                  </>
+                  <div className="order-status-final">
+                    <p style={{ color: '#10b981', fontWeight: 'bold' }}>✅ Orden lista para entrega</p>
+                  </div>
+                )}
+
+                {order.status === 'cancelled' && (
+                  <div className="order-status-final">
+                    <p style={{ color: '#ef4444', fontWeight: 'bold' }}>❌ Orden cancelada</p>
+                  </div>
                 )}
               </div>
             </div>
