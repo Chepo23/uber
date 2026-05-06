@@ -19,23 +19,29 @@ export default function UberEatsPanel() {
       const orders = await uberEatsService.getOrders();
       
       // Transformar datos de Uber (puede venir del webhook o de la API)
-      const transformedOrders = (orders || []).map(order => {
-        // Si viene del webhook, usar estructura diferente
-        const rawData = order.rawData || order;
-        
-        return {
-          id: order.id || order.orderId || order.order_id || 'unknown',
-          customer: order.customer || rawData.customer_name || order.consumer?.name || 'Cliente Desconocido',
-          phone: rawData.customer_phone || order.consumer?.phone || 'N/A',
-          address: rawData.delivery_address || order.delivery_address?.address || 'N/A',
-          items: order.items || rawData.items || [],
-          total: order.total || rawData.total || 0,
-          status: order.status || rawData.status || 'pending',
-          paymentStatus: order.paymentStatus || rawData.payment_status || 'complete',
-          timestamp: new Date(order.timestamp || rawData.created_at || Date.now()),
-          deliveryTime: rawData.estimated_pickup_time ? `${rawData.estimated_pickup_time} min` : 'Sin ETA'
-        };
-      });
+      const transformedOrders = (orders || [])
+        .filter(order => {
+          // ❌ Excluir órdenes rechazadas, canceladas o listas
+          const status = order.status || order.rawData?.status || 'pending';
+          return !['ready', 'cancelled', 'rejected'].includes(status);
+        })
+        .map(order => {
+          // Si viene del webhook, usar estructura diferente
+          const rawData = order.rawData || order;
+          
+          return {
+            id: order.id || order.orderId || order.order_id || 'unknown',
+            customer: order.customer || rawData.customer_name || order.consumer?.name || 'Cliente Desconocido',
+            phone: rawData.customer_phone || order.consumer?.phone || 'N/A',
+            address: rawData.delivery_address || order.delivery_address?.address || 'N/A',
+            items: order.items || rawData.items || [],
+            total: order.total || rawData.total || 0,
+            status: order.status || rawData.status || 'pending',
+            paymentStatus: order.paymentStatus || rawData.payment_status || 'complete',
+            timestamp: new Date(order.timestamp || rawData.created_at || Date.now()),
+            deliveryTime: rawData.estimated_pickup_time ? `${rawData.estimated_pickup_time} min` : 'Sin ETA'
+          };
+        });
 
       setUberOrders(transformedOrders);
       setError(null);

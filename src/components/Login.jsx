@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { LockKeyhole, UserRound, LogIn, Car } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import uberOAuthService from '../services/uberOAuthService';
+import { localLogin } from '../services/localAuth';
 import './Login.css';
 
 export default function Login() {
-  const { login, register, authError } = useAuth();
+  const { login, register, authError, applyDirectSession } = useAuth();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('login');
   const [formData, setFormData] = useState({ username: '', password: '' });
@@ -58,12 +59,27 @@ export default function Login() {
     setSubmitting(true);
 
     try {
-      await login({
+      // ✅ Primero intentar login local (NO depende de Sierra)
+      const localSession = await localLogin({
         username: formData.username.trim(),
         password: formData.password,
       });
-    } catch (error) {
-      setLocalError(error.message || 'No fue posible iniciar sesion.');
+      
+      // ✅ Aplicar sesión directamente sin validar contra Sierra
+      applyDirectSession(localSession);
+      navigate('/dashboard');
+      
+    } catch (localErr) {
+      // Si falla local, intentar Sierra como fallback
+      console.warn('Local auth failed, trying Sierra fallback:', localErr);
+      try {
+        await login({
+          username: formData.username.trim(),
+          password: formData.password,
+        });
+      } catch (sierraErr) {
+        setLocalError(localErr.message || 'Usuario o contraseña incorrectos');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -172,6 +188,13 @@ export default function Login() {
 
               {(localError || authError) && <p className="login-error">{localError || authError}</p>}
               {localSuccess && <p className="login-success">{localSuccess}</p>}
+              
+              <div className="demo-users-hint" style={{ marginTop: '12px', fontSize: '11px', color: '#666', backgroundColor: '#f5f5f5', padding: '8px 12px', borderRadius: '6px' }}>
+                <div style={{ fontWeight: '600', marginBottom: '4px' }}>📋 Usuarios demo:</div>
+                <div>• usuario / usuario123</div>
+                <div>• admin / admin123</div>
+                <div>• brandon / brandon123</div>
+              </div>
 
               <button type="submit" className="login-btn" disabled={submitting}>
                 <LogIn size={16} />

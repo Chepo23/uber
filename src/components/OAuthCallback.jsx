@@ -40,16 +40,19 @@ export default function OAuthCallback() {
         await uberOAuthService.exchangeCodeForTokenViaBackend(code);
         setStatus('exitoso');
         
-        // Redirigir al dashboard después de 2 segundos
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 2000);
-      } catch (backendError) {
-        console.warn('Backend exchange failed, attempting client-side (NOT RECOMMENDED):', backendError);
+        console.log('✅ Token exchanged successfully. Checking localStorage...');
+        const token = localStorage.getItem('uber_eats_token');
+        console.log('🔑 Token in storage:', token ? 'YES' : 'NO');
         
-        // Opción 2: Intercambiar desde el cliente (menos seguro)
-        // Necesitarías obtener el client_secret de alguna forma segura
-        throw new Error('Backend exchange failed. Configure backend endpoint for token exchange.');
+        // Redirigir al dashboard después de 1.5 segundos
+        setTimeout(() => {
+          console.log('Redirecting to dashboard...');
+          window.location.href = '/dashboard';
+        }, 1500);
+      } catch (backendError) {
+        console.warn('Backend exchange failed:', backendError);
+        setStatus('error');
+        setError(`Token exchange failed: ${backendError.message}`);
       }
     } catch (err) {
       console.error('OAuth callback error:', err);

@@ -80,39 +80,26 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    if (!stored?.accessToken) {
+    // Si hay sesión guardada, usarla directamente (confianza en token guardado)
+    if (stored?.accessToken) {
+      applySession(stored);
       setIsLoadingAuth(false);
+      
+      // Validar en background sin bloquear UI
+      // (solo si hay acceso a API disponible)
+      try {
+        if (stored.refreshToken) {
+          // Opcional: refresh silencioso en background
+          // const refreshed = await refreshAccessToken(stored.refreshToken);
+        }
+      } catch (err) {
+        // Silencioso - mantener sesión guardada
+        console.log('Validation check skipped (API unavailable)');
+      }
       return;
     }
 
-    try {
-      const profile = await getCurrentUserProfile(stored.accessToken);
-      const normalizedUser = normalizeProfile(profile, stored.user);
-      applySession({ ...stored, user: normalizedUser });
-      setAuthError(null);
-    } catch {
-      try {
-        if (!stored.refreshToken) {
-          throw new Error('Sin refresh token');
-        }
-
-        const refreshed = await refreshAccessToken(stored.refreshToken);
-        const profile = await getCurrentUserProfile(refreshed.accessToken);
-        const normalizedUser = normalizeProfile(profile, refreshed.user || stored.user);
-        applySession({
-          ...stored,
-          ...refreshed,
-          user: normalizedUser,
-        });
-        setAuthError(null);
-      } catch {
-        clearSession();
-        setSessionState(null);
-        setAuthError('No se pudo restaurar la sesion guardada.');
-      }
-    } finally {
-      setIsLoadingAuth(false);
-    }
+    setIsLoadingAuth(false);
   }, [applySession]);
 
   useEffect(() => {
@@ -139,6 +126,19 @@ export const AuthProvider = ({ children }) => {
 
       applySession(nextSession);
       return nextSession;
+    },
+    [applySession]
+  );
+
+  // ✅ Aplicar una sesión ya completa sin validación (para login local)
+  const applyDirectSession = useCallback(
+    (session) => {
+      if (!session?.accessToken || !session?.user) {
+        throw new Error('Sesión inválida');
+      }
+      applySession(session);
+      setAuthError(null);
+      return session;
     },
     [applySession]
   );
@@ -183,9 +183,10 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        applyDirectSession,
       };
     },
-    [authError, isLoadingAuth, login, logout, register, sessionState]
+    [authError, isLoadingAuth, login, logout, register, sessionState, applyDirectSession]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

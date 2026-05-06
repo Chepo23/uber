@@ -327,7 +327,7 @@
   {
     "id": "TEST-ORDER-1777954900968",
     "orderId": "TEST-ORDER-1777954900968",
-    "status": "pending",
+    "status": "rejected",
     "customer": "Juan García",
     "total": 56.37,
     "items": [
@@ -392,7 +392,7 @@
   {
     "id": "TEST-ORDER-1777954928373",
     "orderId": "TEST-ORDER-1777954928373",
-    "status": "pending",
+    "status": "rejected",
     "customer": "María López",
     "total": 23.99,
     "items": [

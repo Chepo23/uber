@@ -151,8 +151,8 @@ export const OrderProvider = ({ children }) => {
     if (!isAuthenticated || !user?.id) {
       setOrders([]);
       setUberOrders([]);
-      setProducts([]);
       setActiveOrder(null);
+      // ❌ NO limpiar products - puede haber sesión guardada que se está cargando
       return;
     }
 
